@@ -1,0 +1,343 @@
+[
+    {
+        "id": "be7ef5b56e6cd6b2",
+        "type": "tab",
+        "label": "Flow 7",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "82cdb17790f15a5a",
+        "type": "ui_template",
+        "z": "be7ef5b56e6cd6b2",
+        "group": "c81a10b77104f3f0",
+        "name": "galeria",
+        "order": 10,
+        "width": "12",
+        "height": "12",
+        "format": "<div style=\"display: flex; flex-wrap: wrap; gap: 10px;\">\n    <div ng-repeat=\"item in msg.payload track by $index\"\n        style=\"border: 1px solid #ccc; padding: 10px; border-radius: 10px; width: 150px;\">\n        \n        <img ng-src=\"{{item.foto}}\" style=\"width: 100%; border-radius: 5px;\" />\n        \n        <div style=\"margin-top: 5px; font-size: 0.9em;\">\n            <strong>{{$index + 1}}</strong> — {{item.descricao || \"(sem descrição)\"}}\n        </div>\n    </div>\n</div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 610,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "185653709c250b45",
+        "type": "mqtt in",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "Receber Foto ",
+        "topic": "enviar/imagem",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "5433a38947cc38f3",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 190,
+        "y": 680,
+        "wires": [
+            [
+                "501792393de7d09e"
+            ]
+        ]
+    },
+    {
+        "id": "501792393de7d09e",
+        "type": "function",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "BUILD",
+        "func": "// Function node no Client B (agora com 2 saídas):\n// • Saída 1: mensagens para Telegram (msgTelegram)\n// • Saída 2: mensagens para MQTT “galeria” (msgGaleria)\n\nlet dados = (typeof msg.payload === \"string\")\n    ? JSON.parse(msg.payload)\n    : msg.payload;\n\n// Recupera array atual de galeria\nlet galeria = flow.get(\"galeria\") || [];\n\n// Prepara variáveis para as duas saídas\nlet msgTelegram = null;\nlet msgGaleria = null;\nlet msgAviso = null;\n\n// Função auxiliar para converter DataURL em Buffer\nfunction dataUrlToBuffer(dataUrl) {\n    // dataUrl ex: \"data:image/png;base64,AAA...\"\n    let base64 = dataUrl.replace(/^data:image\\/\\w+;base64,/, \"\");\n    return Buffer.from(base64, \"base64\");\n}\n\n// ---------------------------------------------------\n// 1) Mensagem de “clear” (comando: { clear: true })\n// ---------------------------------------------------\nif (dados.clear === true) {\n    // Limpa a galeria\n    galeria = [];\n    flow.set(\"galeria\", galeria);\n\n    // Prepara msg para limpar no dashboard (saida 2)\n    msgGaleria = {\n        topic: \"galeria\",\n        payload: galeria\n    };\n\n    msgAviso = {\n        payload: \"ℹ️ A galeria foi limpa.\"\n\n    };\n\n\n    // Prepara msg para Telegram (saida 1)\n    msgTelegram = {\n        payload: {\n            chatId: \"1475383091\",\n            type: \"message\",\n            content: \"🖼️ Galeria foi completamente limpa com sucesso✔️\"\n        }\n    };\n\n    return [msgTelegram, msgGaleria, msgAviso];\n}\n\n// ---------------------------------------------------\n// 2) Mensagem de “remove” (comando: { action:\"remove\", id:\"...\" })\n// ---------------------------------------------------\nif (dados.action === \"remove\" && dados.id) {\n    // Encontra índice e dados da imagem a remover\n    let idx = galeria.findIndex(item => item.id === dados.id);\n    if (idx >= 0) {\n        let objetoRemovido = galeria[idx];\n        let descRemovida = objetoRemovido.descricao || \"(sem descrição)\";\n        let fotoDataUrl = objetoRemovido.foto;\n        let buf = dataUrlToBuffer(fotoDataUrl);\n\n        // Remove do array\n        galeria.splice(idx, 1);\n        flow.set(\"galeria\", galeria);\n\n        // Prepara msgGaleria (saida 2)\n        msgGaleria = {\n            topic: \"galeria\",\n            payload: galeria\n        };\n\n        // Prepara msgTelegram (saida 1)\n        msgTelegram = {\n            payload: {\n                chatId: \"1475383091\",\n                type: \"photo\",\n                content: buf,\n                caption: `🗑️ Foto removida:\\nID: ${dados.id}\\nDescrição: \"${descRemovida}\"`\n            }\n        };\n\n        return [msgTelegram, msgGaleria];\n    } else {\n        // Se não encontrou, só publica o estado atual da galeria\n        msgGaleria = {\n            topic: \"galeria\",\n            payload: galeria\n        };\n        return [null, msgGaleria];\n    }\n}\n\n// ---------------------------------------------------\n// 3) Mensagem de “rename” (comando: { action:\"rename\", id:\"...\", newDesc:\"...\" })\n// ---------------------------------------------------\nif (dados.action === \"rename\" && dados.id) {\n    let idx = galeria.findIndex(item => item.id === dados.id);\n    if (idx >= 0) {\n        let objetoAntigo = galeria[idx];\n        let descAntiga = objetoAntigo.descricao || \"(sem descrição)\";\n        let fotoDataUrl = objetoAntigo.foto;\n        let buf = dataUrlToBuffer(fotoDataUrl);\n\n        // Atualiza descrição\n        galeria[idx].descricao = dados.newDesc || descAntiga;\n        flow.set(\"galeria\", galeria);\n\n        // Prepara msgGaleria (saida 2)\n        msgGaleria = {\n            topic: \"galeria\",\n            payload: galeria\n        };\n\n        // Prepara msgTelegram (saida 1)\n        msgTelegram = {\n            payload: {\n                chatId: \"1475383091\",\n                type: \"photo\",\n                content: buf,\n                caption: `✏️ Foto renomeada:\\nID: ${dados.id}\\nDescrição antiga: \"${descAntiga}\"\\nNova descrição: \"${dados.newDesc}\"`\n            }\n        };\n\n        return [msgTelegram, msgGaleria];\n    } else {\n        // Se não encontrou, apenas publica estado atual\n        msgGaleria = {\n            topic: \"galeria\",\n            payload: galeria\n        };\n        return [null, msgGaleria];\n    }\n}\n\n// ---------------------------------------------------\n// 4) Nova foto chegando (“enviar/imagem”: { foto:\"<base64>\", id:\"...\", descricao:\"...\" })\n// ---------------------------------------------------\nif (dados.foto) {\n    // Converte para DataURL, se necessário\n    let imagemBase64 = dados.foto.startsWith(\"data:image\")\n        ? dados.foto\n        : \"data:image/png;base64,\" + dados.foto;\n\n    let novoItem = {\n        id: dados.id || (\"img\" + Date.now()),\n        foto: imagemBase64,\n        descricao: dados.descricao || \"(sem descrição)\",\n        timestamp: dados.timestamp || Date.now()\n    };\n\n    // Acrescenta ao final (para manter ordem cronológica)\n    galeria.push(novoItem);\n    if (galeria.length > 10) {\n        galeria.shift();  // remove o mais antigo, se ultrapassar 10\n    }\n    flow.set(\"galeria\", galeria);\n\n    // Prepara msgGaleria (saida 2)\n    msgGaleria = {\n        topic: \"galeria\",\n        payload: galeria\n    };\n\n    // Prepara msgTelegram (saida 1)\n  let bufFotoNova = dataUrlToBuffer(imagemBase64);\n    let descricao = novoItem.descricao;\n    msgTelegram = {\n        payload: {\n            chatId: \"1475383091\",\n            type:    \"photo\",\n            content: bufFotoNova,\n            caption: `📸 Nova foto recebida: ${descricao}`\n        }\n    };\n    \n    return [ msgTelegram, msgGaleria ];\n}\n// ---------------------------------------------------\n// 5) Qualquer outro caso: apenas reenviar galeria sem Telegram\n// ---------------------------------------------------\nmsgGaleria = {\n    topic: \"galeria\",\n    payload: galeria\n};\nreturn [null, msgGaleria];\n",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 740,
+        "wires": [
+            [
+                "d576e3f4ce8cbc3e"
+            ],
+            [
+                "435be4f70f962d6f",
+                "43909e95485961f2"
+            ],
+            [
+                "b10250a1cdcb5ff7"
+            ]
+        ]
+    },
+    {
+        "id": "43909e95485961f2",
+        "type": "function",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "AVISO-STATUS",
+        "func": "// Function node com 2 saídas:\n// • Saída 1: msgTelegram (enviar notificação para Telegram, se limite atingido)\n// • Saída 2: msgStatus  (publicar sempre o status em “galeria/status”)\n\n// 1. Obtém a galeria do contexto\nlet galeria = flow.get(\"galeria\") || [];\n\n// 2. Função auxiliar que verifica o limite da galeria\nfunction verificarLimiteGaleria(galeria) {\n    const limite = 10;\n    const total = galeria.length;\n    const restantes = limite - total;\n\n    let aviso1 = null;\n    let aviso2 = null;\n    if (restantes <= 3 && restantes > 0) {\n        aviso1 = `Faltam ${restantes} imagem(ns) para atingir o limite de ${limite}.`;\n    } else if (restantes === 0) {\n        aviso2 = `A galeria atingiu o limite de ${limite} imagens.`;\n    }\n\n    return {\n        total,\n        restantes,\n        limite,\n        aviso1,\n        aviso2\n    };\n}\n\n// 3. Obtém o status atual\nlet status = verificarLimiteGaleria(galeria);\n\n// 4. Prepara as duas mensagens\nlet msgTelegram = null;\nlet msgStatus = {\n    topic: \"galeria/status\",\n    payload: status\n};\n\n// 4.1. Se o limite já foi alcançado, monta msgTelegram\nif (status.total >= status.limite) {\n    node.warn(\"Limite de imagens atingido — enviando notificação\");\n\n    msgTelegram = {\n        payload: {\n            chatId: \"1475383091\",\n            type: \"message\",\n            content: `⚠️ Aviso:\\nLimite de imagens atingido (${status.limite}).\\nPor favor, remova uma imagem antes de adicionar outra.`\n        }\n    };\n}\n\n// 5. Retorna sempre [msgTelegram, msgStatus]\n//    — Se msgTelegram for null, nada será enviado na Saída 1.\n//    — msgStatus sempre sai na Saída 2 (para “galeria/status”).\nreturn [msgTelegram, msgStatus];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 740,
+        "wires": [
+            [],
+            [
+                "6139a56604491d6f"
+            ]
+        ]
+    },
+    {
+        "id": "6139a56604491d6f",
+        "type": "mqtt out",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "",
+        "topic": "galeria/status",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "5433a38947cc38f3",
+        "x": 770,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "435be4f70f962d6f",
+        "type": "mqtt out",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "",
+        "topic": "galeria",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "5433a38947cc38f3",
+        "x": 550,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "a54908ee4e3df238",
+        "type": "mqtt in",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "",
+        "topic": "galeria",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "5433a38947cc38f3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 370,
+        "y": 560,
+        "wires": [
+            [
+                "82cdb17790f15a5a"
+            ]
+        ]
+    },
+    {
+        "id": "ed2c6af1056a3230",
+        "type": "mqtt in",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "CRUD - GALERIA",
+        "topic": "galeria/comando",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "5433a38947cc38f3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 210,
+        "y": 780,
+        "wires": [
+            [
+                "501792393de7d09e"
+            ]
+        ]
+    },
+    {
+        "id": "b10250a1cdcb5ff7",
+        "type": "ui_toast",
+        "z": "be7ef5b56e6cd6b2",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "⚠️Aviso",
+        "name": "⚠️Aviso",
+        "x": 560,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "d576e3f4ce8cbc3e",
+        "type": "telegram sender",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "",
+        "bot": "064d80fd49be08f4",
+        "haserroroutput": true,
+        "outputs": 2,
+        "x": 710,
+        "y": 660,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "842b2d6bccb7c52d",
+        "type": "jimp-image",
+        "z": "be7ef5b56e6cd6b2",
+        "name": "",
+        "data": "payload",
+        "dataType": "msg",
+        "ret": "img",
+        "parameter1": "",
+        "parameter1Type": "msg",
+        "parameter2": "",
+        "parameter2Type": "msg",
+        "parameter3": "",
+        "parameter3Type": "msg",
+        "parameter4": "",
+        "parameter4Type": "msg",
+        "parameter5": "",
+        "parameter5Type": "msg",
+        "parameter6": "",
+        "parameter6Type": "msg",
+        "parameter7": "",
+        "parameter7Type": "msg",
+        "parameter8": "",
+        "parameter8Type": "msg",
+        "sendProperty": "payload",
+        "sendPropertyType": "msg",
+        "parameterCount": 0,
+        "jimpFunction": "dither565",
+        "selectedJimpFunction": {
+            "name": "dither565",
+            "fn": "dither565",
+            "description": "ordered dithering of the image and reduce color space to 16-bits (RGB565)",
+            "parameters": []
+        },
+        "x": 360,
+        "y": 980,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c81a10b77104f3f0",
+        "type": "ui_group",
+        "name": "🖼️ Galeria Digital",
+        "tab": "265a9d43c2d3bb9e",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "5433a38947cc38f3",
+        "type": "mqtt-broker",
+        "name": "Broker-EMQX",
+        "broker": "p7220d2d.ala.eu-central-1.emqxsl.com",
+        "port": " 8883",
+        "tls": "826eb57bba58a660",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "064d80fd49be08f4",
+        "type": "telegram bot",
+        "botname": "PB_bot",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "testenvironment": false,
+        "updatemode": "polling",
+        "pollinterval": 300,
+        "usesocks": false,
+        "sockshost": "",
+        "socksprotocol": "socks5",
+        "socksport": 6667,
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbothost": "0.0.0.0",
+        "localbotport": 8443,
+        "publicbotport": 8443,
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    },
+    {
+        "id": "265a9d43c2d3bb9e",
+        "type": "ui_tab",
+        "name": "Client B",
+        "icon": "",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "826eb57bba58a660",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "emqxsl-ca.crt",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    }
+]
