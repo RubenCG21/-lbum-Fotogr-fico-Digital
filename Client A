@@ -1,0 +1,820 @@
+[
+    {
+        "id": "269961dfa8baf760",
+        "type": "tab",
+        "label": "Flow 6",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "72e3306595fcd663",
+        "type": "change",
+        "z": "269961dfa8baf760",
+        "name": "switch",
+        "rules": [
+            {
+                "t": "set",
+                "p": "foto",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "08e24a961fa6c48d",
+        "type": "ui_text_input",
+        "z": "269961dfa8baf760",
+        "name": "",
+        "label": "✏️Descrição:",
+        "tooltip": "",
+        "group": "c81a10b77104f3f0",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "descricao",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 540,
+        "y": 280,
+        "wires": [
+            [
+                "e9afec3875b4ca7f"
+            ]
+        ]
+    },
+    {
+        "id": "e9afec3875b4ca7f",
+        "type": "change",
+        "z": "269961dfa8baf760",
+        "name": "Guardar descrição",
+        "rules": [
+            {
+                "t": "set",
+                "p": "descricao",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 710,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8442c99d501d25d0",
+        "type": "ui_button",
+        "z": "269961dfa8baf760",
+        "name": "",
+        "group": "c81a10b77104f3f0",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Enviar",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "send",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 90,
+        "y": 240,
+        "wires": [
+            [
+                "99c5e2b6fa87d2fd"
+            ]
+        ]
+    },
+    {
+        "id": "c6baf981cb8bc5fe",
+        "type": "mqtt out",
+        "z": "269961dfa8baf760",
+        "name": "Enviar Imagem",
+        "topic": "enviar/imagem",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "bc9237487c8e36b7",
+        "x": 460,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "b7809249327feda9",
+        "type": "ui_button",
+        "z": "269961dfa8baf760",
+        "name": "",
+        "group": "c81a10b77104f3f0",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "descartar",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "Trash Bin",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 660,
+        "y": 220,
+        "wires": [
+            [
+                "6f4772f6f75d1279"
+            ]
+        ]
+    },
+    {
+        "id": "6f4772f6f75d1279",
+        "type": "change",
+        "z": "269961dfa8baf760",
+        "name": "Limpar imagem e descrição ",
+        "rules": [
+            {
+                "t": "set",
+                "p": "foto",
+                "pt": "flow",
+                "to": "null",
+                "tot": "json"
+            },
+            {
+                "t": "set",
+                "p": "descricao",
+                "pt": "flow",
+                "to": "\" \"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 880,
+        "y": 220,
+        "wires": [
+            [
+                "08e24a961fa6c48d",
+                "72e3306595fcd663"
+            ]
+        ]
+    },
+    {
+        "id": "934778eafa4d7487",
+        "type": "ui_webcam",
+        "z": "269961dfa8baf760",
+        "name": "",
+        "group": "c81a10b77104f3f0",
+        "order": 2,
+        "width": "12",
+        "height": "8",
+        "countdown": false,
+        "autoStart": false,
+        "hideCaptureButton": false,
+        "showImage": "2",
+        "mirror": true,
+        "format": "png",
+        "x": 120,
+        "y": 100,
+        "wires": [
+            [
+                "70a14063af8eea41"
+            ]
+        ]
+    },
+    {
+        "id": "70a14063af8eea41",
+        "type": "base64",
+        "z": "269961dfa8baf760",
+        "name": "",
+        "action": "",
+        "property": "payload",
+        "x": 300,
+        "y": 100,
+        "wires": [
+            [
+                "72e3306595fcd663"
+            ]
+        ]
+    },
+    {
+        "id": "a84e6c72664208c7",
+        "type": "mqtt in",
+        "z": "269961dfa8baf760",
+        "name": "Galeria Status",
+        "topic": "galeria/status",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "bc9237487c8e36b7",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 500,
+        "wires": [
+            [
+                "c8c61ea6cc9ef796",
+                "5fa77fd4cb3448c4",
+                "1dbc6ac3c5c82d76"
+            ]
+        ]
+    },
+    {
+        "id": "99c5e2b6fa87d2fd",
+        "type": "function",
+        "z": "269961dfa8baf760",
+        "name": "Enviar",
+        "func": "const status = flow.get(\"galeriaStatus\") || { total: 0, limite: 10 };\n\n// Se atingiu o limite, não enviar nova imagem (saída 1 = null), mas continuar com a limpeza (saída 3)\nif (status.total >= status.limite) {\n   \n    let msgAviso = { payload: \"A galeria atingiu o limite de 10 imagens.\\n Por favor, remova uma imagem antes de adicionar outra.\" };\n    return [null,null, msgAviso];\n}\n\n// Se ainda há espaço, envia imagem pela saída 1, saída 3 fica vazia, saída 2 limpa descrição\nmsg.payload = {\n    id:        \"foto_\" + Date.now(),\n    timestamp: new Date().toISOString(),\n    descricao: flow.get(\"descricao\"),\n    foto:      flow.get(\"foto\")\n};\n\nlet msgClearDescricao = { payload: \"\" };\n\nreturn [msg, msgClearDescricao];\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 240,
+        "wires": [
+            [
+                "c6baf981cb8bc5fe"
+            ],
+            [
+                "08e24a961fa6c48d"
+            ],
+            [
+                "702b2eae2817e021"
+            ]
+        ]
+    },
+    {
+        "id": "f94c79ab8297a62b",
+        "type": "ui_toast",
+        "z": "269961dfa8baf760",
+        "position": "top right",
+        "displayTime": "2",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "Cancel",
+        "raw": true,
+        "className": "",
+        "topic": "⚠️Aviso",
+        "name": "⚠️Aviso1",
+        "x": 480,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "b5e4c333dfc91f66",
+        "type": "ui_text",
+        "z": "269961dfa8baf760",
+        "group": "c81a10b77104f3f0",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "🖼️ Estado   Galeria: ",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": true,
+        "font": "Arial,Arial,Helvetica,sans-serif",
+        "fontSize": "18",
+        "color": "#000000",
+        "x": 150,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "1c19787fd39a64b2",
+        "type": "ui_button",
+        "z": "269961dfa8baf760",
+        "name": "",
+        "group": "77c2c3f59ce2e92a",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Limpar Galeria",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "clear",
+        "topicType": "str",
+        "x": 720,
+        "y": 760,
+        "wires": [
+            [
+                "a4_function_eliminar"
+            ]
+        ]
+    },
+    {
+        "id": "c8c61ea6cc9ef796",
+        "type": "function",
+        "z": "269961dfa8baf760",
+        "name": "Save galeria/status - ui_text config",
+        "func": "// Guardar status da galeria no contexto\nflow.set(\"galeriaStatus\", msg.payload);\n\nlet p = Object.assign({}, msg.payload);\ndelete p.aviso;\n\nmsg.payload = `Total: ${p.total}\\nRestantes: ${p.restantes}\\nLimite: ${p.limite}`;\n\n\n\n\n\n\n\nreturn [null, msg];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 160,
+        "y": 420,
+        "wires": [
+            [
+                "99c5e2b6fa87d2fd"
+            ],
+            [
+                "b5e4c333dfc91f66"
+            ]
+        ]
+    },
+    {
+        "id": "a1_eliminar_dropdown",
+        "type": "ui_dropdown",
+        "z": "269961dfa8baf760",
+        "name": "Selecionar imagem",
+        "label": "Escolha uma imagem",
+        "tooltip": "",
+        "place": "Selecionar...",
+        "group": "77c2c3f59ce2e92a",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [],
+        "payload": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "className": "",
+        "x": 210,
+        "y": 840,
+        "wires": [
+            [
+                "a2_memo_id_para_eliminar",
+                "92170829cf0a1cab"
+            ]
+        ]
+    },
+    {
+        "id": "a2_memo_id_para_eliminar",
+        "type": "change",
+        "z": "269961dfa8baf760",
+        "name": "Guardar ID em flow.selectedIdx",
+        "rules": [
+            {
+                "t": "set",
+                "p": "selectedId",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a3_botao_eliminar",
+        "type": "ui_button",
+        "z": "269961dfa8baf760",
+        "name": "Eliminar Imagem",
+        "group": "77c2c3f59ce2e92a",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Eliminar imagem",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "delete",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "remove",
+        "topicType": "str",
+        "x": 710,
+        "y": 800,
+        "wires": [
+            [
+                "a4_function_eliminar"
+            ]
+        ]
+    },
+    {
+        "id": "a4_function_eliminar",
+        "type": "function",
+        "z": "269961dfa8baf760",
+        "name": "Remover da galeria",
+        "func": "let cmd = msg.topic;               // \"remove\", \"rename\" ou \"clear\"\nlet selectedId = flow.get(\"selectedId\") || \"\";\nlet newDesc = flow.get(\"newDesc\") || \"\";\n\n// 1) Comando “clear”\nif (cmd === \"clear\") {\n    return [{\n        topic: \"galeria/comando\",\n        payload: { clear: true }\n    }, null, null];\n}\n\n// 2) Se for “remove” ou “rename” e não há ID selecionado, aborta\nif ((cmd === \"remove\" || cmd === \"rename\") && !selectedId) {\n    return [null, null, null];\n}\n\n// 3) Comando “remove”\nif (cmd === \"remove\") {\n    let msgComando = {\n        topic: \"galeria/comando\",\n        payload: {\n            action: \"remove\",\n            id: selectedId\n        }\n    };\n\n    let msgClearImage = { topic: \"clearImage\", payload: { clear: true } };\n\n    return [msgComando, null, msgClearImage];\n}\n\n// 4) Comando “rename”\nif (cmd === \"rename\") {\n    let msgComando = {\n        topic: \"galeria/comando\",\n        payload: {\n            action: \"rename\",\n            id: selectedId,\n            newDesc: newDesc\n        }\n    };\n\n    let msgClearDescricao = { payload: \"\" };\n    let msgClearImage = { topic: \"clearImage\", payload: { clear: true } };\n\n    return [msgComando, msgClearDescricao, msgClearImage];\n}\n\n// 5) Se não for nenhum dos comandos esperados\nreturn [null, null, null];\n",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 800,
+        "wires": [
+            [
+                "a5_publica_fotos"
+            ],
+            [
+                "25e9a9907ec69d6e"
+            ],
+            [
+                "a3fbee49fa36cbf5"
+            ]
+        ]
+    },
+    {
+        "id": "a5_publica_fotos",
+        "type": "mqtt out",
+        "z": "269961dfa8baf760",
+        "name": "CRUD - GALERIA",
+        "topic": "galeria/comando",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "bc9237487c8e36b7",
+        "x": 1150,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "a7_atualiza_dropdown",
+        "type": "mqtt in",
+        "z": "269961dfa8baf760",
+        "name": "Recebe galeria",
+        "topic": "galeria",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "bc9237487c8e36b7",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 720,
+        "wires": [
+            [
+                "a8_function_dropdown_options"
+            ]
+        ]
+    },
+    {
+        "id": "a8_function_dropdown_options",
+        "type": "function",
+        "z": "269961dfa8baf760",
+        "name": "Gerar opções dropdown",
+        "func": "\nconst galeria = msg.payload;\n\n// Guarda a galeria no flow (caso queiras usar noutros lugares)\nflow.set(\"galeria\", galeria);\n\n// Prepara as opções para o ui_dropdown\n// Mostra ID + descrição \nmsg.options = galeria.map(f => ({\n    label: `${f.id} - ${f.descricao || \"sem descrição\"}`,\n    value: f.id\n}));\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 780,
+        "wires": [
+            [
+                "a1_eliminar_dropdown"
+            ]
+        ]
+    },
+    {
+        "id": "d285825e53e7bb2c",
+        "type": "ui_button",
+        "z": "269961dfa8baf760",
+        "name": "Renomear",
+        "group": "77c2c3f59ce2e92a",
+        "order": 4,
+        "width": "",
+        "height": "",
+        "passthru": false,
+        "label": "Renomear",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "rename",
+        "topicType": "str",
+        "x": 710,
+        "y": 840,
+        "wires": [
+            [
+                "a4_function_eliminar"
+            ]
+        ]
+    },
+    {
+        "id": "25e9a9907ec69d6e",
+        "type": "ui_text_input",
+        "z": "269961dfa8baf760",
+        "name": "Nova Descrição",
+        "label": "✏️Nova descrição:",
+        "tooltip": "",
+        "group": "77c2c3f59ce2e92a",
+        "order": 3,
+        "width": "",
+        "height": "",
+        "passthru": true,
+        "mode": "text",
+        "delay": "",
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 1220,
+        "y": 800,
+        "wires": [
+            [
+                "995bebebfb29c1dc"
+            ]
+        ]
+    },
+    {
+        "id": "995bebebfb29c1dc",
+        "type": "change",
+        "z": "269961dfa8baf760",
+        "name": "Salvar newDesc",
+        "rules": [
+            {
+                "t": "set",
+                "p": "newDesc",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "x": 1380,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "92170829cf0a1cab",
+        "type": "function",
+        "z": "269961dfa8baf760",
+        "name": "function 7",
+        "func": "let galeria = flow.get('galeria') || [];\nlet selectedId = msg.payload;     // ID selecionado via dropdown\n\n// Encontrar a imagem\nlet dados = galeria.find(f => f.id === selectedId);\n\nif (dados) {\n  // Corrigir prefixo da imagem base64, se necessário\n  if (!dados.foto.startsWith(\"data:image\")) {\n    dados.foto = \"data:image/png;base64,\" + dados.foto;\n  }\n\n  return { payload: dados };\n} else {\n  return { payload: null };\n}\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 960,
+        "wires": [
+            [
+                "a3fbee49fa36cbf5"
+            ]
+        ]
+    },
+    {
+        "id": "a3fbee49fa36cbf5",
+        "type": "ui_template",
+        "z": "269961dfa8baf760",
+        "group": "77c2c3f59ce2e92a",
+        "name": "Imagem  Selecionada",
+        "order": 4,
+        "width": "10",
+        "height": "10",
+        "format": "<div ng-if=\"showImage\">\n  <p><strong>ID:</strong> {{ image.id }}</p>\n  <p><strong>Descrição:</strong> {{ image.descricao || '(sem descrição)' }}</p>\n  <img ng-src=\"{{ image.foto }}\" style=\"max-width: 100%; border: 1px solid #ccc; border-radius: 8px; margin-top: 10px;\" />\n</div>\n\n<div ng-if=\"!showImage\">\n  <p style=\"color: #888;\">⚠️ Nenhuma imagem selecionada ou não encontrada.</p>\n</div>\n\n<script>\n  (function(scope) {\n    scope.showImage = false;\n    scope.image = null;\n\n    scope.$watch('msg', function(msg) {\n      if (!msg) return;\n\n      if (msg.topic === \"clearImage\" || !msg.payload) {\n        // Limpa a imagem e mostra a mensagem de nenhuma imagem\n        scope.showImage = false;\n        scope.image = null;\n      } else if (msg.payload) {\n        // Mostra imagem normalmente\n        scope.showImage = true;\n        scope.image = msg.payload;\n      }\n    });\n  })(scope);\n</script>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1040,
+        "y": 960,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5fa77fd4cb3448c4",
+        "type": "function",
+        "z": "269961dfa8baf760",
+        "name": "Aviso - Lógica(Aviso1)",
+        "func": "// Só envia a mensagem se existir aviso com conteúdo\nif (msg.payload && msg.payload.aviso1) {\n  msg.payload = msg.payload.aviso1; // só o texto do aviso\n  return msg;                      // envia para a notificação\n} else {\n  return null;                     // não envia nada, notificação não aparece\n}\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 520,
+        "wires": [
+            [
+                "f94c79ab8297a62b"
+            ]
+        ]
+    },
+    {
+        "id": "1dbc6ac3c5c82d76",
+        "type": "function",
+        "z": "269961dfa8baf760",
+        "name": "Aviso - Lógica(Aviso2)",
+        "func": "// Só envia a mensagem se existir aviso com conteúdo\nif (msg.payload && msg.payload.aviso2) {\n  msg.payload = msg.payload.aviso2; // só o texto do aviso\n  return msg;                      // envia para a notificação\n} else {\n  return null;                     // não envia nada, notificação não aparece\n}\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 560,
+        "wires": [
+            [
+                "62185aa08bc0a5b9"
+            ]
+        ]
+    },
+    {
+        "id": "62185aa08bc0a5b9",
+        "type": "ui_toast",
+        "z": "269961dfa8baf760",
+        "position": "dialog",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "Cancel",
+        "raw": true,
+        "className": "",
+        "topic": "⚠️Aviso",
+        "name": "⚠️Aviso2",
+        "x": 480,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "702b2eae2817e021",
+        "type": "ui_toast",
+        "z": "269961dfa8baf760",
+        "position": "dialog",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "Cancel",
+        "raw": true,
+        "className": "",
+        "topic": "⚠️Aviso",
+        "name": "⚠️Aviso",
+        "x": 440,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c81a10b77104f3f0",
+        "type": "ui_group",
+        "name": "Câmara 📷",
+        "tab": "ui-tab",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "bc9237487c8e36b7",
+        "type": "mqtt-broker",
+        "name": "Broker-EMQX",
+        "broker": "p7220d2d.ala.eu-central-1.emqxsl.com",
+        "port": " 8883",
+        "tls": "da903adf725d3ee0",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "77c2c3f59ce2e92a",
+        "type": "ui_group",
+        "name": "🖼️ Galeria",
+        "tab": "ui-tab",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui-tab",
+        "type": "ui_tab",
+        "name": "Client A",
+        "icon": "mi-account_box_asset",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "da903adf725d3ee0",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "emqxsl-ca.crt",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    }
+]
