@@ -34,7 +34,7 @@
         "z": "be7ef5b56e6cd6b2",
         "name": "Receber Foto ",
         "topic": "enviar/imagem",
-        "qos": "1",
+        "qos": "2",
         "datatype": "auto-detect",
         "broker": "5433a38947cc38f3",
         "nl": false,
@@ -90,7 +90,9 @@
         "x": 580,
         "y": 740,
         "wires": [
-            [],
+            [
+                "d576e3f4ce8cbc3e"
+            ],
             [
                 "6139a56604491d6f"
             ]
@@ -102,7 +104,7 @@
         "z": "be7ef5b56e6cd6b2",
         "name": "",
         "topic": "galeria/status",
-        "qos": "1",
+        "qos": "2",
         "retain": "",
         "respTopic": "",
         "contentType": "",
@@ -120,7 +122,7 @@
         "z": "be7ef5b56e6cd6b2",
         "name": "",
         "topic": "galeria",
-        "qos": "1",
+        "qos": "2",
         "retain": "",
         "respTopic": "",
         "contentType": "",
@@ -128,7 +130,7 @@
         "correl": "",
         "expiry": "",
         "broker": "5433a38947cc38f3",
-        "x": 550,
+        "x": 590,
         "y": 800,
         "wires": []
     },
@@ -138,7 +140,7 @@
         "z": "be7ef5b56e6cd6b2",
         "name": "",
         "topic": "galeria",
-        "qos": "1",
+        "qos": "2",
         "datatype": "auto-detect",
         "broker": "5433a38947cc38f3",
         "nl": false,
@@ -159,7 +161,7 @@
         "z": "be7ef5b56e6cd6b2",
         "name": "CRUD - GALERIA",
         "topic": "galeria/comando",
-        "qos": "1",
+        "qos": "2",
         "datatype": "auto-detect",
         "broker": "5433a38947cc38f3",
         "nl": false,
